@@ -127,9 +127,13 @@ export default function AppointmentScheduler() {
         setShowForm(false);
         setEditingAppt(null);
         resetForm();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || "Failed to save appointment"}`);
       }
     } catch (error) {
       console.error("Error saving appointment:", error);
+      alert("Error saving appointment. Please try again.");
     }
   };
 
@@ -190,6 +194,14 @@ export default function AppointmentScheduler() {
   };
 
   const getPetName = (petId) => {
+    if (!petId) return "Unknown Pet";
+
+    // If petId is already populated with pet object
+    if (typeof petId === "object" && petId.name) {
+      return petId.name;
+    }
+
+    // If petId is just an ID string, find it in the pets array
     const pet = pets.find((p) => p._id === petId);
     return pet?.name || "Unknown Pet";
   };
