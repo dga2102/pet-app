@@ -1,3 +1,7 @@
+# Animal Care App
+
+A comprehensive pet care management application built with Next.js, MongoDB, and Clerk authentication.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
