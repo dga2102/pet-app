@@ -1,65 +1,203 @@
-import Image from "next/image";
+import { SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from "next/link";
+import {
+  PawPrint,
+  Heart,
+  Calendar,
+  Users,
+  ShoppingCart,
+  Activity,
+} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-emerald-700">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20 md:py-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <span className="text-green-600">Pet Care</span> Made Easy
+            </h1>
+            <p className="text-xl text-gray-700 mb-8">
+              Manage your pets' health, schedules, and daily care all in one
+              place. Keep your family organized and your pets happy.
+            </p>
+
+            <SignedOut>
+              <div className="flex gap-4">
+                <SignUpButton>
+                  <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    Get Started
+                  </button>
+                </SignUpButton>
+                <SignInButton>
+                  <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </div>
+            </SignedOut>
+
+            <SignedIn>
+              <Link
+                href="/dashboard"
+                className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+              >
+                Go to Dashboard
+              </Link>
+            </SignedIn>
+          </div>
+
+          <div className="hidden md:block">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 border-4 border-blue-200">
+              <PawPrint className="text-blue-600 mb-4" size={48} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                All Your Pet's Needs
+              </h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-center gap-2">
+                  <Heart size={20} className="text-red-500" />
+                  Health & Medical Records
+                </li>
+                <li className="flex items-center gap-2">
+                  <Calendar size={20} className="text-orange-500" />
+                  Appointments & Schedules
+                </li>
+                <li className="flex items-center gap-2">
+                  <Activity size={20} className="text-green-500" />
+                  Daily Care Tasks
+                </li>
+                <li className="flex items-center gap-2">
+                  <Users size={20} className="text-purple-500" />
+                  Family Management
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
+            Features
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="bg-blue-50 rounded-xl p-8 hover:shadow-lg transition">
+              <PawPrint className="text-blue-600 mb-4" size={40} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Pet Profiles
+              </h3>
+              <p className="text-gray-700">
+                Create detailed profiles for each pet with breed, age, medical
+                history, and vaccination records.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-green-50 rounded-xl p-8 hover:shadow-lg transition">
+              <Calendar className="text-green-600 mb-4" size={40} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Smart Calendar
+              </h3>
+              <p className="text-gray-700">
+                View your pet's entire schedule with a beautiful calendar
+                integration. Never miss an appointment.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-purple-50 rounded-xl p-8 hover:shadow-lg transition">
+              <Activity className="text-purple-600 mb-4" size={40} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Care Planning
+              </h3>
+              <p className="text-gray-700">
+                Create daily tasks and assign them to family members. Keep
+                everyone accountable.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-red-50 rounded-xl p-8 hover:shadow-lg transition">
+              <Heart className="text-red-600 mb-4" size={40} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Health Tracking
+              </h3>
+              <p className="text-gray-700">
+                Track medications, vaccinations, vet appointments, and health
+                records in one place.
+              </p>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="bg-orange-50 rounded-xl p-8 hover:shadow-lg transition">
+              <ShoppingCart className="text-orange-600 mb-4" size={40} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Shopping List
+              </h3>
+              <p className="text-gray-700">
+                Keep track of pet food, supplies, toys, and medications you need
+                to buy.
+              </p>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="bg-indigo-50 rounded-xl p-8 hover:shadow-lg transition">
+              <Users className="text-indigo-600 mb-4" size={40} />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Family Sharing
+              </h3>
+              <p className="text-gray-700">
+                Invite family members to manage your pets together. Assign roles
+                and responsibilities.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-6">Ready to Start?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Join thousands of pet owners who are keeping their pets healthier
+            and happier with organized care.
           </p>
+
+          <SignedOut>
+            <SignUpButton>
+              <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition">
+                Sign Up Free Today
+              </button>
+            </SignUpButton>
+          </SignedOut>
+
+          <SignedIn>
+            <Link
+              href="/dashboard"
+              className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition"
+            >
+              Go to Dashboard
+            </Link>
+          </SignedIn>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <p className="mb-4">
+            PetCare © {new Date().getFullYear()}. All rights reserved.
+          </p>
+          <p className="text-gray-400">Made with ❤️ for pet lovers</p>
         </div>
-      </main>
+      </footer>
     </div>
   );
 }
