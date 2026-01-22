@@ -34,13 +34,15 @@ body {
 }
 
 h1 {
-  font-size: 1.6rem;
+  font-size: 4.6rem;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: lowercase;
   font-family: "Archivo", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 600;
-  font-style: normal;
   font-variation-settings: "wdth" 100;
   color: #333;
+  line-height: 3.4rem;
 }
 
 h2 {
@@ -51,6 +53,20 @@ h2 {
   font-style: normal;
   font-variation-settings: "wdth" 100;
   color: #333;
+}
+
+h4 {
+  text-transform: lowercase;
+  font-optical-sizing: auto;
+  font-variation-settings: "wdth" 100;
+  color: #333;
+  font-family: Archivo, sans-serif;
+  font-size: 1.3rem;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 1.2rem;
+  border-top: 1px solid #00b478;
+  padding-top: 0.4rem;
 }
 
 .bggradient {

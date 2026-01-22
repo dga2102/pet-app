@@ -15,9 +15,9 @@ export default function CarePlanPage() {
     <main className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900">Care Plan</h1>
-        <p className="text-gray-600 mt-2">
+        <h4 className="text-gray-600 mt-2">
           Create and manage daily care tasks and routines for your pets
-        </p>
+        </h4>
       </div>
 
       <CarePlanTasks />
