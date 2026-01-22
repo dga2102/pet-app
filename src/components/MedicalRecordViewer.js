@@ -8,9 +8,12 @@ export default function MedicalRecordViewer({
   onClose,
   petId,
 }) {
-  const isPDF = fileName.toLowerCase().endsWith(".pdf");
-  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
-  const isDocument = /\.(doc|docx|xls|xlsx|txt)$/i.test(fileName);
+  const safeName = typeof fileName === "string" ? fileName.toLowerCase() : "";
+  const safeUrl = typeof fileUrl === "string" ? fileUrl.toLowerCase() : "";
+
+  const isPDF = safeUrl.endsWith(".pdf");
+  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(safeUrl);
+  const isDocument = /\.(doc|docx|xls|xlsx|txt)$/i.test(safeUrl);
 
   // Create proxy download URL for proper file handling
   const getDownloadUrl = () => {

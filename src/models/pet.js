@@ -22,6 +22,10 @@ const petSchema = new mongoose.Schema(
     microchipId: String,
     dateOfBirth: Date,
     profileImage: String,
+    allergies: String,
+    chronicIssues: String,
+    exerciseNeeds: String,
+    microchipNumber: String,
     medicalRecords: [
       {
         fileName: String,

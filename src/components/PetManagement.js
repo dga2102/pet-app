@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Edit,
@@ -13,6 +14,7 @@ import {
 import MedicalRecordViewer from "./MedicalRecordViewer";
 
 export default function PetManagement() {
+  const router = useRouter();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -32,6 +34,10 @@ export default function PetManagement() {
     age: "",
     weight: "",
     dateOfBirth: "",
+    allergies: "",
+    chronicIssues: "",
+    exerciseNeeds: "",
+    microchipNumber: "",
   });
 
   useEffect(() => {
@@ -224,6 +230,10 @@ export default function PetManagement() {
       age: "",
       weight: "",
       dateOfBirth: "",
+      allergies: "",
+      chronicIssues: "",
+      exerciseNeeds: "",
+      microchipNumber: "",
     });
     setProfilePicturePreview(null);
     setMedicalRecords([]);
@@ -239,6 +249,10 @@ export default function PetManagement() {
       age: pet.age,
       weight: pet.weight,
       dateOfBirth: pet.dateOfBirth?.split("T")[0] || "",
+      allergies: pet.allergies || "",
+      chronicIssues: pet.chronicIssues || "",
+      exerciseNeeds: pet.exerciseNeeds || "",
+      microchipNumber: pet.microchipNumber || "",
     });
     if (pet.profileImage) {
       setProfilePicturePreview(pet.profileImage);
@@ -317,7 +331,7 @@ export default function PetManagement() {
           {/* Step Indicator */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center flex-1">
                   <div
                     className={`flex items-center justify-center w-8 h-8 rounded-full font-bold transition ${
@@ -328,7 +342,7 @@ export default function PetManagement() {
                   >
                     {currentStep > step ? <Check size={20} /> : step}
                   </div>
-                  {step < 3 && (
+                  {step < 4 && (
                     <div
                       className={`flex-1 h-1 mx-2 transition ${
                         currentStep > step ? "bg-blue-500" : "bg-gray-200"
@@ -340,6 +354,7 @@ export default function PetManagement() {
             </div>
             <div className="flex justify-between text-sm text-gray-600">
               <span>Basic Info</span>
+              <span>More Info</span>
               <span>Profile Picture</span>
               <span>Medical Records</span>
             </div>
@@ -446,11 +461,81 @@ export default function PetManagement() {
               </div>
             )}
 
-            {/* Step 2: Profile Picture */}
+            {/* Step 2: More Info */}
             {currentStep === 2 && (
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 mb-4">
-                  Step 2: Profile Picture
+                  Step 2: More Info
+                </h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  Add additional health and identification information
+                  (Optional)
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Allergies
+                    </label>
+                    <input
+                      type="text"
+                      name="allergies"
+                      value={formData.allergies}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
+                      placeholder="e.g., Chicken, Wheat"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Chronic Issues
+                    </label>
+                    <input
+                      type="text"
+                      name="chronicIssues"
+                      value={formData.chronicIssues}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
+                      placeholder="e.g., Arthritis, Diabetes"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Exercise Needs
+                    </label>
+                    <input
+                      type="text"
+                      name="exerciseNeeds"
+                      value={formData.exerciseNeeds}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
+                      placeholder="e.g., 2 hours daily"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Microchip Number
+                    </label>
+                    <input
+                      type="text"
+                      name="microchipNumber"
+                      value={formData.microchipNumber}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
+                      placeholder="e.g., 985 112 003 349205"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Profile Picture */}
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-gray-900 mb-4">
+                  Step 3: Profile Picture
                 </h4>
                 <p className="text-sm text-gray-600">
                   Upload a profile picture for your pet (Optional)
@@ -508,11 +593,11 @@ export default function PetManagement() {
               </div>
             )}
 
-            {/* Step 3: Medical Records */}
-            {currentStep === 3 && (
+            {/* Step 4: Medical Records */}
+            {currentStep === 4 && (
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 mb-4">
-                  Step 3: Medical Records
+                  Step 4: Medical Records
                 </h4>
                 <p className="text-sm text-gray-600">
                   Upload medical records (PDF, DOC, or image files) - Optional
@@ -617,7 +702,7 @@ export default function PetManagement() {
                   Back
                 </button>
               )}
-              {currentStep < 3 && (
+              {currentStep < 4 && (
                 <button
                   type="button"
                   onClick={() => setCurrentStep(currentStep + 1)}
@@ -626,7 +711,7 @@ export default function PetManagement() {
                   Next
                 </button>
               )}
-              {currentStep === 3 && (
+              {currentStep === 4 && (
                 <button
                   type="submit"
                   className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
@@ -654,7 +739,10 @@ export default function PetManagement() {
           >
             {/* Profile Picture */}
             {pet.profileImage && (
-              <div className="w-full h-48 overflow-hidden bg-gray-200">
+              <div
+                onClick={() => router.push(`/pets/${pet._id}`)}
+                className="w-full h-48 overflow-hidden bg-gray-200 cursor-pointer hover:opacity-80 transition"
+              >
                 <img
                   src={pet.profileImage}
                   alt={pet.name}
@@ -665,7 +753,10 @@ export default function PetManagement() {
 
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
+                <div
+                  className="flex-1 cursor-pointer hover:opacity-70 transition"
+                  onClick={() => router.push(`/pets/${pet._id}`)}
+                >
                   <h3 className="text-xl font-bold text-gray-900">
                     {pet.name}
                   </h3>
@@ -725,7 +816,30 @@ export default function PetManagement() {
                       {new Date(pet.dateOfBirth).toLocaleDateString()}
                     </p>
                   )}
-
+                  {pet.allergies && (
+                    <p>
+                      <span className="font-medium">Allergies:</span>{" "}
+                      {pet.allergies}
+                    </p>
+                  )}
+                  {pet.chronicIssues && (
+                    <p>
+                      <span className="font-medium">Chronic Issues:</span>{" "}
+                      {pet.chronicIssues}
+                    </p>
+                  )}
+                  {pet.exerciseNeeds && (
+                    <p>
+                      <span className="font-medium">Exercise Needs:</span>{" "}
+                      {pet.exerciseNeeds}
+                    </p>
+                  )}
+                  {pet.microchipNumber && (
+                    <p>
+                      <span className="font-medium">Microchip Number:</span>{" "}
+                      {pet.microchipNumber}
+                    </p>
+                  )}
                   {/* Medical Records */}
                   {pet.medicalRecords && pet.medicalRecords.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
