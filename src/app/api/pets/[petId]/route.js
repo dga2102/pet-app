@@ -13,7 +13,7 @@ export async function GET(req, { params }) {
 
     await connectDB();
 
-    const { petId } = params;
+    const { petId } = await params;
 
     const familyProfile = await FamilyProfile.findOne({ clerkId: userId });
     if (!familyProfile) {
@@ -46,10 +46,10 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
-
-    const { petId } = params;
+    const { petId } = await params;
     const body = await req.json();
+
+    await connectDB();
 
     const familyProfile = await FamilyProfile.findOne({ clerkId: userId });
     if (!familyProfile) {
@@ -59,17 +59,23 @@ export async function PUT(req, { params }) {
       );
     }
 
-    const pet = await Pet.findOneAndUpdate(
-      { _id: petId, familyProfileId: familyProfile._id },
-      body,
-      { new: true },
-    );
+    const pet = await Pet.findOne({
+      _id: petId,
+      familyProfileId: familyProfile._id,
+    });
 
     if (!pet) {
       return NextResponse.json({ error: "Pet not found" }, { status: 404 });
     }
 
-    return NextResponse.json(pet, { status: 200 });
+    // Update pet fields
+    Object.assign(pet, body);
+    await pet.save();
+
+    return NextResponse.json(
+      { success: true, pet, message: "Pet updated successfully" },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error updating pet:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -83,9 +89,9 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
+    const { petId } = await params;
 
-    const { petId } = params;
+    await connectDB();
 
     const familyProfile = await FamilyProfile.findOne({ clerkId: userId });
     if (!familyProfile) {

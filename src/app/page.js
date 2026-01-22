@@ -105,8 +105,8 @@ export default function Home() {
                 Smart Calendar
               </h3>
               <p className="text-gray-700">
-                View your pet's entire schedule with a beautiful calendar
-                integration. Never miss an appointment.
+                View your pet's entire schedule with calendar integration. Never
+                miss an appointment.
               </p>
             </div>
 
@@ -166,7 +166,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Join thousands of pet owners who are keeping their pets healthier
+            Join our league of pet owners who are keeping their pets healthier
             and happier with organized care.
           </p>
 
@@ -195,7 +195,7 @@ export default function Home() {
           <p className="mb-4">
             PetCare © {new Date().getFullYear()}. All rights reserved.
           </p>
-          <p className="text-gray-400">Made with ❤️ for pet lovers</p>
+          <p className="text-gray-400">Made with ❤️ by TeamTwo</p>
         </div>
       </footer>
     </div>
