@@ -1,112 +1,213 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { UserButton, useAuth } from "@clerk/nextjs";
 import {
+  Home,
+  Calendar,
+  CheckSquare,
+  User,
+  LogOut,
   Menu,
   X,
-  Home,
-  Dog,
-  Calendar,
-  Briefcase,
-  ShoppingCart,
-  Settings,
+  PawPrint,
 } from "lucide-react";
 
-const Navbar = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isSignedIn } = useAuth();
+export default function Navbar() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks = isSignedIn
-    ? [
-        { href: "/dashboard", label: "Dashboard", icon: Home },
-        { href: "/pets", label: "My Pets", icon: Dog },
-        { href: "/care-plan", label: "Care Plan", icon: Briefcase },
-        { href: "/appointments", label: "Appointments", icon: Calendar },
-        { href: "/shopping", label: "Shopping", icon: ShoppingCart },
-        { href: "/settings", label: "Settings", icon: Settings },
-      ]
-    : [];
+  useEffect(() => {
+    checkAuth();
+
+    // Listen for auth state changes
+    window.addEventListener("auth-change", checkAuth);
+
+    return () => {
+      window.removeEventListener("auth-change", checkAuth);
+    };
+  }, [pathname]); // Re-check auth when route changes
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("/api/auth/me");
+      const data = await response.json();
+
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      setUser(null);
+
+      // Dispatch custom event for auth change
+      window.dispatchEvent(new Event("auth-change"));
+
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  // Don't show navbar on auth pages
+  const authPages = ["/login", "/signup", "/accept-invite"];
+  if (authPages.some((page) => pathname?.startsWith(page))) {
+    return null;
+  }
+
+  if (loading) {
+    return (
+      <nav className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <div className="animate-pulse bg-gray-200 h-8 w-32 rounded"></div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const navItems = [
+    { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Pets", href: "/pets", icon: PawPrint },
+    { name: "Calendar", href: "/calendar", icon: Calendar },
+    { name: "Care Plan", href: "/care-plan", icon: CheckSquare },
+    { name: "Profile", href: "/profile", icon: User },
+  ];
 
   return (
-    <>
-      {/* Top Navbar - Mobile Only */}
-      <nav className="md:hidden bg-gradient-to-r from-emerald-500 to-emerald-700 text-white shadow-lg sticky top-0 z-40">
-        <div className="px-4 py-4 flex items-center justify-between">
+    <nav className="topnav">
+      <div className="navmw">
+        <div className="flex justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="text-2xl font-bold flex items-center gap-2">
-            <Dog size={28} />
-            PetCare
-          </Link>
+          <div className="flex items-center">
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <PawPrint className="text-green-500" size={28} />
+              <span className="text-xl font-bold text-gray-900">PetCare</span>
+            </Link>
+          </div>
 
-          {/* Menu Button and User */}
-          <div className="flex items-center gap-4">
-            {isSignedIn && <UserButton afterSignOutUrl="/" />}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                    isActive
+                      ? "bg-green-500 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon size={18} />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+
+            {/* User Menu */}
+            <div className="ml-4 flex items-center gap-3 pl-4 border-l border-gray-200">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-gray-700 hidden lg:block">
+                  {user.name}
+                </span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition"
+                title="Logout"
+              >
+                <LogOut size={18} />
+                <span className="text-sm font-medium hidden lg:block">
+                  Logout
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-gray-700 hover:text-gray-900 p-2"
             >
-              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        {sidebarOpen && (
-          <div className="bg-emerald-600 border-t border-emerald-500">
-            <div className="px-4 py-4 space-y-3">
-              {navLinks.map(({ href, label, icon: Icon }) => (
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200 bg-white">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+
+              return (
                 <Link
-                  key={href}
-                  href={href}
-                  className="flex items-center gap-2 py-2 hover:text-blue-100 transition"
-                  onClick={() => setSidebarOpen(false)}
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${
+                    isActive
+                      ? "bg-green-500 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
                 >
-                  <Icon size={18} />
-                  <span>{label}</span>
+                  <Icon size={20} />
+                  <span className="font-medium">{item.name}</span>
                 </Link>
-              ))}
+              );
+            })}
+
+            <div className="pt-4 pb-2 border-t border-gray-200">
+              <div className="flex items-center gap-3 px-3 py-2">
+                <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">{user.name}</div>
+                  <div className="text-sm text-gray-500">{user.email}</div>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 mt-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Logout</span>
+              </button>
             </div>
           </div>
-        )}
-      </nav>
-
-      {/* Sidebar - Desktop Only */}
-      <aside className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-64 md:bg-gradient-to-b md:from-emerald-500 md:to-emerald-700 md:text-white md:shadow-lg md:flex md:flex-col md:z-50">
-        {/* Logo */}
-        <div className="px-6 py-6 border-b border-emerald-400">
-          <Link href="/" className="text-2xl font-bold flex items-center gap-2">
-            <Dog size={28} />
-            PetCare
-          </Link>
         </div>
-
-        {/* Navigation Links */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navLinks.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-400 transition"
-            >
-              <Icon size={20} />
-              <span>{label}</span>
-            </Link>
-          ))}
-        </nav>
-
-        {/* User Menu */}
-        {isSignedIn && (
-          <div className="px-6 py-6 border-t border-emerald-400">
-            <div className="flex justify-center">
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          </div>
-        )}
-      </aside>
-    </>
+      )}
+    </nav>
   );
-};
-
-export default Navbar;
+}

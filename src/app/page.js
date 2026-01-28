@@ -1,4 +1,6 @@
-import { SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   PawPrint,
@@ -10,6 +12,17 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    async function loadUser() {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      }
+    }
+    loadUser();
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-emerald-700">
       {/* Hero Section */}
@@ -24,29 +37,23 @@ export default function Home() {
               place. Keep your family organized and your pets happy.
             </p>
 
-            <SignedOut>
+            {!user && (
               <div className="flex gap-4">
-                <SignUpButton>
-                  <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                    Get Started
-                  </button>
-                </SignUpButton>
-                <SignInButton>
-                  <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
-                    Sign In
-                  </button>
-                </SignInButton>
-              </div>
-            </SignedOut>
+                <Link
+                  href="/register"
+                  className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                >
+                  Sign Up
+                </Link>
 
-            <SignedIn>
-              <Link
-                href="/dashboard"
-                className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-              >
-                Go to Dashboard
-              </Link>
-            </SignedIn>
+                <Link
+                  href="/login"
+                  className="bg-gray-200 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="hidden md:block">
@@ -169,23 +176,6 @@ export default function Home() {
             Join our league of pet owners who are keeping their pets healthier
             and happier with organized care.
           </p>
-
-          <SignedOut>
-            <SignUpButton>
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition">
-                Sign Up Free Today
-              </button>
-            </SignUpButton>
-          </SignedOut>
-
-          <SignedIn>
-            <Link
-              href="/dashboard"
-              className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition"
-            >
-              Go to Dashboard
-            </Link>
-          </SignedIn>
         </div>
       </section>
 

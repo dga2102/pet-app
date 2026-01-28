@@ -2,6 +2,15 @@ import mongoose from "mongoose";
 
 const dailyTaskSchema = new mongoose.Schema(
   {
+    householdId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Household",
+      required: true,
+    },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "HouseholdMember",
+    },
     familyProfileId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "FamilyProfile",
@@ -42,6 +51,10 @@ const dailyTaskSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

@@ -90,10 +90,12 @@ export default function CarePlanTasks() {
       }
 
       if (response.ok) {
-        fetchData();
+        await fetchData();
         setShowForm(false);
         setEditingTask(null);
         resetForm();
+      } else {
+        console.error("Error saving task:", response.statusText);
       }
     } catch (error) {
       console.error("Error saving task:", error);
@@ -164,6 +166,40 @@ export default function CarePlanTasks() {
     return caretaker?.name || "Unassigned";
   };
 
+  const toggleTaskComplete = async (taskId) => {
+    try {
+      const task = tasks.find((t) => t._id === taskId);
+      if (!task) return;
+
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...task,
+          isCompleted: !task.isCompleted,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchData();
+      } else {
+        console.error(
+          "Error updating task completion status:",
+          response.statusText,
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling task completion:", error);
+    }
+  };
+
+  const getTodaysTasks = () => {
+    const today = new Date().getDay();
+    return tasks.filter((task) => task.daysOfWeek?.includes(today));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -174,7 +210,7 @@ export default function CarePlanTasks() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="pagetitle">
         <h2 className="text-2xl font-bold">Daily Care Plan</h2>
         <button
           onClick={() => {
@@ -355,7 +391,116 @@ export default function CarePlanTasks() {
         </div>
       )}
 
+      {/* Today's Tasks Timeline */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-bold mb-6">Today's Tasks</h3>
+        {getTodaysTasks().length > 0 ? (
+          <div className="space-y-0">
+            {getTodaysTasks()
+              .sort((a, b) => a.time.localeCompare(b.time))
+              .map((task, index, sortedTasks) => (
+                <div key={task._id} className="flex gap-4">
+                  {/* Timeline Column */}
+                  <div className="flex flex-col items-center gap-0">
+                    {/* Radio Button */}
+                    <label className="relative z-10 flex items-center justify-center cursor-pointer">
+                      <input
+                        type="radio"
+                        checked={task.isCompleted || false}
+                        onChange={() => toggleTaskComplete(task._id)}
+                        className="w-6 h-6 cursor-pointer accent-blue-500"
+                      />
+                    </label>
+                    {/* Connecting Line */}
+                    {index < sortedTasks.length - 1 && (
+                      <div className="w-1 h-16 bg-gray-300 mt-0"></div>
+                    )}
+                  </div>
+
+                  {/* Task Content */}
+                  <div className="flex-1 pb-8">
+                    <div className="flex gap-4 items-start">
+                      {/* Task Title Column */}
+                      <div
+                        className={`flex-1 p-4 rounded-lg transition-all ${
+                          task.isCompleted
+                            ? "bg-orange-100 border border-orange-300"
+                            : "bg-blue-100 border border-blue-300"
+                        }`}
+                      >
+                        <p
+                          className={`font-medium text-gray-900 ${
+                            task.isCompleted
+                              ? "line-through text-orange-700"
+                              : "text-blue-900"
+                          }`}
+                        >
+                          {task.title}
+                        </p>
+                        <p
+                          className={`text-sm capitalize ${
+                            task.isCompleted
+                              ? "text-orange-600"
+                              : "text-blue-600"
+                          }`}
+                        >
+                          {task.taskType}
+                        </p>
+                      </div>
+
+                      {/* Assigned To Column */}
+                      <div className="min-w-32 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="text-sm text-gray-600">Assigned To</p>
+                        <p className="font-medium text-gray-900">
+                          {getCaretakerName(
+                            task.assignedTo?._id || task.assignedTo,
+                          )}
+                        </p>
+                      </div>
+
+                      {/* Time Column */}
+                      <div className="min-w-24 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center gap-2">
+                        <Clock size={16} className="text-gray-600" />
+                        <span className="font-medium text-gray-900">
+                          {task.time}
+                        </span>
+                      </div>
+
+                      {/* Actions Column */}
+                      <div className="flex gap-2 p-4 bg-gray-50 rounded-lg">
+                        <button
+                          onClick={() => handleEdit(task)}
+                          className="p-2 text-blue-500 hover:bg-blue-100 rounded-lg transition"
+                          title="Edit task"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(task._id)}
+                          className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition"
+                          title="Delete task"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <AlertCircle className="mx-auto text-gray-400 mb-2" size={32} />
+            <p className="text-gray-500">No tasks scheduled for today</p>
+          </div>
+        )}
+      </div>
+
+      {/* All Tasks Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-xl font-bold">All Tasks</h3>
+        </div>
         {tasks.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">

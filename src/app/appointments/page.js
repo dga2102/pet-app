@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import AppointmentScheduler from "@/components/AppointmentScheduler";
 

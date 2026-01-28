@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const appointmentSchema = new mongoose.Schema(
   {
-    familyProfileId: {
+    householdId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "FamilyProfile",
+      ref: "Household",
       required: true,
     },
     petId: {
@@ -12,13 +12,25 @@ const appointmentSchema = new mongoose.Schema(
       ref: "Pet",
       required: true,
     },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     title: {
       type: String,
       required: true,
     },
-    type: {
+    appointmentType: {
       type: String,
-      enum: ["vet", "groomer", "walker", "training", "other"],
+      enum: [
+        "vet-checkup",
+        "emergency",
+        "grooming",
+        "vaccination",
+        "training",
+        "other",
+      ],
       required: true,
     },
     startDate: {
@@ -29,37 +41,21 @@ const appointmentSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    provider: {
-      name: String,
-      phone: String,
-      email: String,
-      address: String,
-    },
-    notes: String,
-    assignedTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Caretaker",
-    },
-    reminder: {
-      enabled: {
-        type: Boolean,
-        default: true,
-      },
-      minutesBefore: {
-        type: Number,
-        default: 1440, // 24 hours
-      },
-    },
-    status: {
+    notes: {
       type: String,
-      enum: ["scheduled", "completed", "cancelled"],
-      default: "scheduled",
+      default: "",
     },
-    cost: Number,
-    recurringPattern: {
+    location: {
       type: String,
-      enum: ["once", "daily", "weekly", "monthly", "yearly"],
-      default: "once",
+      default: "",
+    },
+    reminderSent: {
+      type: Boolean,
+      default: false,
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
@@ -70,4 +66,3 @@ const Appointment =
   mongoose.model("Appointment", appointmentSchema);
 
 export default Appointment;
-export { appointmentSchema };

@@ -2,10 +2,15 @@ import mongoose from "mongoose";
 
 const petSchema = new mongoose.Schema(
   {
-    familyProfileId: {
+    householdId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "FamilyProfile",
+      ref: "Household",
       required: true,
+    },
+    primaryCarer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
     },
     name: {
       type: String,

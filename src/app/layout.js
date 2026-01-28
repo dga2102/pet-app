@@ -1,14 +1,7 @@
 import { Archivo } from "next/font/google";
 import "./globals.css";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
 import Navbar from "@/components/Navbar";
+import { HouseholdProvider } from "@/app/context/HouseholdContext";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -22,13 +15,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${archivo.variable} antialiased`}>
-          <Navbar />
-          <div className="md:ml-64">{children}</div>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`${archivo.variable} antialiased`}>
+        <Navbar />
+        <div className="md:mx-16">{children}</div>
+      </body>
+    </html>
   );
 }

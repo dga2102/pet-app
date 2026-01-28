@@ -230,7 +230,7 @@ export default function AppointmentScheduler() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="pagetitle">
         <h2 className="text-2xl font-bold">Appointments</h2>
         <button
           onClick={() => {

@@ -1,76 +1,72 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import connectDB from "@/lib/db";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import dbConnect from "@/lib/db";
+import User from "@/models/user";
 import Pet from "@/models/pet";
-import FamilyProfile from "@/models/familyProfile";
+import { sessionOptions } from "@/lib/session";
 
-export async function POST(req) {
+export async function GET(request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const cookieStore = await cookies();
+    const session = await getIronSession(cookieStore, sessionOptions);
+
+    if (!session.userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
+    await dbConnect();
 
-    const body = await req.json();
-    const { name, animal, breed, age, weight, dateOfBirth } = body;
+    // Get current user
+    const user = await User.findById(session.userId);
 
-    let familyProfile = await FamilyProfile.findOne({ clerkId: userId });
-    if (!familyProfile) {
-      // Create default family profile if it doesn't exist
-      familyProfile = new FamilyProfile({
-        clerkId: userId,
-        familyName: "My Family",
-        primaryContact: { name: "Primary Contact" },
-      });
-      await familyProfile.save();
+    if (!user) {
+      return Response.json({ error: "User not found" }, { status: 404 });
     }
 
-    const pet = new Pet({
-      familyProfileId: familyProfile._id,
-      name,
-      animal,
-      breed,
-      age,
-      weight,
-      dateOfBirth,
-    });
+    // Get all pets for this household
+    const pets = await Pet.find({ householdId: user.householdId })
+      .populate("primaryCarer", "name email")
+      .sort({ createdAt: -1 });
 
-    await pet.save();
-
-    familyProfile.pets.push(pet._id);
-    await familyProfile.save();
-
-    return NextResponse.json(pet, { status: 201 });
+    return Response.json(pets);
   } catch (error) {
-    console.error("Error creating pet:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Get pets error:", error);
+    return Response.json({ error: "Failed to get pets" }, { status: 500 });
   }
 }
 
-export async function GET(req) {
+export async function POST(request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const cookieStore = await cookies();
+    const session = await getIronSession(cookieStore, sessionOptions);
+
+    if (!session.userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
+    await dbConnect();
 
-    const familyProfile = await FamilyProfile.findOne({ clerkId: userId });
-    if (!familyProfile) {
-      return NextResponse.json(
-        { error: "Family profile not found" },
-        { status: 404 },
-      );
+    // Get current user
+    const user = await User.findById(session.userId);
+
+    if (!user) {
+      return Response.json({ error: "User not found" }, { status: 404 });
     }
 
-    const pets = await Pet.find({ familyProfileId: familyProfile._id });
+    const petData = await request.json();
 
-    return NextResponse.json(pets, { status: 200 });
+    // Create new pet
+    const pet = await Pet.create({
+      ...petData,
+      householdId: user.householdId,
+    });
+
+    // Populate primaryCarer before returning
+    await pet.populate("primaryCarer", "name email");
+
+    return Response.json(pet, { status: 201 });
   } catch (error) {
-    console.error("Error fetching pets:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Create pet error:", error);
+    return Response.json({ error: "Failed to create pet" }, { status: 500 });
   }
 }
