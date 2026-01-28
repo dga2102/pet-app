@@ -25,6 +25,10 @@ export async function GET(request) {
         id: user._id,
         email: user.email,
         name: user.name,
+        phone: user.phone,
+        address: user.address,
+        bio: user.bio,
+        avatar: user.avatar,
         householdId: user.householdId,
       },
     });
